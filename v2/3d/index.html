@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="青衫企鹅的第一个真实 3D 造型。拖动旋转、缩放，看看祥云马甲的另一面。">
+  <meta name="robots" content="noindex,follow">
+  <meta name="theme-color" content="#ecefe7">
+  <title>青衫企鹅 · 3D 会客厅</title>
+  <link rel="icon" href="../assets/penguin-icon.webp?v=hq-20261117" type="image/webp">
+  <link rel="stylesheet" href="./styles.css">
+  <script type="importmap">{"imports":{"three":"./vendor/three.module.js"}}</script>
+  <script type="module" src="./viewer.js"></script>
+</head>
+<body>
+  <a class="skip" href="#controls">跳到模型操作</a>
+  <header><a class="brand" href="../"><span>青</span><strong>旧事青衫<small>QINGSHAN / THE LITTLE HOST</small></strong></a><a class="back" href="../">← 回到个人空间</a></header>
+  <main>
+    <section class="viewer-shell" aria-labelledby="title">
+      <div class="stage" id="stage">
+        <div class="stage-top"><span>FIG. 02 / IN THREE DIMENSIONS</span><span class="stage-badge">3D 造型初稿</span></div>
+        <canvas id="viewer" role="img" aria-label="可交互的青衫企鹅三维模型，可使用右侧视角和缩放按钮操作" tabindex="0"></canvas>
+        <div class="loading" id="loading" role="status"><span class="loading-dot"></span>青衫企鹅正在就位…</div>
+        <div class="fallback" id="fallback" hidden><img src="../assets/penguin-front.webp?v=hq-20261117" alt="青衫企鹅高清参考图"><p id="fallback-message">当前浏览器无法开启 3D 展示。</p><a href="../">回到高清图片展示 →</a></div>
+        <div class="stage-bottom"><span>拖动旋转 · 滚轮缩放 · 双指缩放</span><button type="button" id="reset" disabled aria-label="复位到初始视角">复位视角 ↺</button></div>
+        <div class="angle-label" id="angle-label" aria-hidden="true">青衫 · 正面</div>
+      </div>
+      <aside id="controls">
+        <div class="intro"><span class="eyebrow">MEET QINGSHAN, AGAIN</span><h1 id="title">这一次，<br>从每个角度认识它。</h1><p>祥云青衫，珊瑚红绳。<br>小企鹅走出了平面，转个身，<br>让好奇心多一点空间。</p></div>
+        <div class="control-section"><h2>转个身看看 <span>VIEW</span></h2><div class="segmented" role="group" aria-label="预设模型视角"><button type="button" data-view="front" aria-pressed="true" disabled>正面</button><button type="button" data-view="side" aria-pressed="false" disabled>侧面</button><button type="button" data-view="back" aria-pressed="false" disabled>背面</button></div></div>
+        <div class="control-section"><h2>靠近一点 <span>ZOOM</span></h2><div class="zoom-row"><button type="button" id="zoom-out" aria-label="缩小模型" disabled>−</button><span>看全貌，也看细节</span><button type="button" id="zoom-in" aria-label="放大模型" disabled>＋</button></div></div>
+        <div class="control-section"><h2>换一种氛围 <span>LIGHT</span></h2><div class="light-switch" role="group" aria-label="灯光环境"><button type="button" data-light="day" aria-pressed="true" disabled><i class="swatch day"></i>日间</button><button type="button" data-light="night" aria-pressed="false" disabled><i class="swatch night"></i>夜间</button></div></div>
+        <div class="auto-row"><label for="auto-rotate">慢慢转一圈</label><button type="button" id="auto-rotate" role="switch" aria-checked="false" disabled aria-label="自动旋转"><span></span></button></div>
+        <div class="download"><a id="download-model" href="./qingshan-penguin.glb" download>保存 3D 模型 <span>↓</span></a><small>GLB 格式，可在其他 3D 工具中打开</small></div>
+        <p class="sculpt-note">这是参照三视图重新搭建的第一版造型，<br>绒面与衣饰做了适合网页的简化。<br><a href="../">高清图片版仍在这里 ↗</a></p>
+      </aside>
+    </section>
+  </main>
+  <footer><span>© 2026 旧事青衫</span><span>一点青绿，一点好奇心。</span><a href="/qingshan-notes/">旧版存档 ↗</a></footer>
+  <div class="sr-only" id="announcement" role="status" aria-live="polite"></div>
+</body>
+</html>

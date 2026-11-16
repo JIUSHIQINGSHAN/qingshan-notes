@@ -1,0 +1,18 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="实战定位工作集假性爆满与进程死锁。如何通过 System Informer 与内核调试工具，在 Windows 11 下保障后台服务不被系统异常挂起。"><title>Windows 性能治理：句柄泄漏排查与多 Agent 协同资源争用 · 旧事青衫</title><link rel="canonical" href="https://jiushiqingshan.github.io/qingshan-notes/article/r06/"><link rel="icon" href="/qingshan-notes/assets/penguin-front-64.webp"><style>body{margin:0;background:#eef7f2;color:#16242b;font:18px/1.85 system-ui,sans-serif}main{max-width:760px;margin:auto;padding:48px 24px 80px}a{color:#286b67}h1{font-size:clamp(28px,6vw,40px);line-height:1.4}h3{margin-top:2em}header{border-bottom:1px solid #a8c5bb;padding-bottom:24px}blockquote{border-left:3px solid #6b9b8a;padding-left:20px}code{overflow-wrap:anywhere}footer{margin-top:60px;border-top:1px solid #a8c5bb;padding-top:24px}@media(prefers-color-scheme:dark){body{background:#101a1b;color:#d8e6eb}a{color:#7bc8c8}}</style></head><body><main><header><a href="/qingshan-notes/">← 旧事青衫 · 全部文章</a><h1>Windows 性能治理：句柄泄漏排查与多 Agent 协同资源争用</h1><p>系统工程 · 2026-08-25</p></header><article><p>Windows 的性能表象极能骗人：内存占用高未必是内存不足，卡顿也未必是 CPU 满载，真正的问题往往藏在句柄、工作集与调度任务的暗层里。本文以 System Informer 为手术刀，结合一次多 Agent 并行环境下的全量维护复盘，解构性能治理的四个战场与五条避坑协议。</p>
+<h3>一、内存的账本：工作集、待机缓存与提交大小</h3>
+<p>任务管理器里的高占用常常是假象。Windows 内存管理器倾向于把空闲物理内存物尽其用，充当待机缓存（Standby Cache）——这部分“占用”随时可以让出，不是瓶颈。真正的判据有两条：页面错误（Page Fault）是否持续飙升，提交大小（Committed Memory）是否逼近上限。诊断的第一步因此是建立正确的列认知：工作集（Working Set）是当前实际占用的物理内存，工作集峰值记录历史最高水位，私有字节（Private Bytes）是进程独占量——三者分立，混谈即误诊。</p>
+<h3>二、挂起与挤水：先冻结、后清算</h3>
+<p>对后台闲置的重型程序，System Informer 提供两把手术刀。挂起（Suspend）冻结全部线程、CPU 时间片归零——但机制真相是：它不释放内存页，工作集仍躺在 RAM 里，只有系统缺内存时才被慢慢换出。挤水（Empty Working Sets）强制把“占而不用”的物理页踢回系统，可这是“借”不是“省”——进程下次活跃还会读回来，换入瞬间伴随可感知的卡顿。正确的手术顺序因此是：先 Suspend tree 冻住行为，再 Empty working sets 挤水——先冻后挤，被挤掉的内存才不会立刻被读回。纪律同样刚性：系统骨架进程（svchost、csrss、dwm、explorer 一族）与任何前台正在使用的程序列入黑名单，永不挂起；一次只挂一棵确认闲置的树，观察五秒系统反应正常再动下一棵；挂错时进入属性页在线程页全选恢复，终极兜底是重启——挂起不落盘，无残留。</p>
+<h3>三、句柄：文件删不掉的真凶</h3>
+<p>文件被占用而无法删除时，答案几乎总在句柄表里。用句柄检索（Find handles or DLLs）输入文件名，即可列出持有该句柄的进程与 PID；处置分两档：终止进程（Terminate）是暴力解，进入句柄页右键关闭单个句柄（Close Handle）是优雅解——不伤进程只解锁。多 Agent 并行场景把这个战场放大了：本地同时运行多个 AI 代理时，高频的终端子进程调用与管道读写极易累积匿名管道句柄泄漏，表现为句柄数缓涨、长期不落。治理纪律是给每个子进程生命周期强加超时销毁，杜绝半永久僵尸子进程；对确实需要暂停的作业，Suspend 只应作为 CPU 维度的节流阀，而非内存清理手段。</p>
+<h3>四、调度任务与自启项：看不见的第二战场</h3>
+<p>性能治理的另一半在启动与调度层。定时任务在独立子进程中执行时，若平台插件未注册独立投递函数，外部投递会报无可用适配器，任务整体卡死在阻断状态——日常维护任务应优先回落本地日志通道，不让通道缺失阻断任务本体。配置铁律：声明无代理模式时必须提供合法脚本路径，仅靠提示词执行的任务必须保持代理调度模式，两者错配即挂起。跨机器迁移后则须全量扫描插件内的绝对路径硬编码——旧用户名、旧桌面路径会让子进程静默 spawn 失败，网关日志逐轮刷屏而主流程毫无感知。开机自启项是第三处暗耗：清掉僵尸自启与重复的预热进程后，开机内存占用可从 80% 量级降到 55% 量级。</p>
+<h3>五、性能治理避坑协议</h3>
+<ul>
+<li><strong>先冻后挤</strong>：Suspend tree 之后再 Empty working sets，顺序颠倒等于白挤。</li>
+<li><strong>挂起前确认无写入</strong>：下载、编译与同步任务被挂起即中断，断点可能重来。</li>
+<li><strong>子进程生命周期强约束</strong>：一切子进程带超时销毁，句柄与管道随生命周期闭环。</li>
+<li><strong>调度任务降级收敛</strong>：投递通道缺失时回落本地留存，任务状态与通道健康分离治理。</li>
+<li><strong>迁移后路径全量审计</strong>：绝对路径硬编码是静默失败的头部来源，迁移日即扫描。</li>
+</ul>
+<p>性能治理的尽头不是更大的内存与更强的 CPU，而是对系统每一层“谁在占用、占用多久、何时释放”的清晰账本——账目清楚，机器自然快。</p></article><footer><a href="/qingshan-notes/">返回首页</a> · <a href="/qingshan-notes/feed.xml">RSS 订阅</a></footer></main></body></html>

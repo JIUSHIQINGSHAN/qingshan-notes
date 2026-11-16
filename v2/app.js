@@ -28,9 +28,9 @@
   });
 
   const poses = {
-    front: { file: './assets/penguin-front.webp', label: '正面', note: '正面 · 很高兴遇见你。' },
-    side: { file: './assets/penguin-side.webp', label: '侧面', note: '侧面 · 换个角度，想法也会不同。' },
-    back: { file: './assets/penguin-back.webp', label: '背面', note: '背面 · 祥云也藏在身后。' }
+    front: { file: './assets/penguin-front.webp?v=hq-20261117', label: '正面', note: '正面 · 很高兴遇见你。' },
+    side: { file: './assets/penguin-side.webp?v=hq-20261117', label: '侧面', note: '侧面 · 换个角度，想法也会不同。' },
+    back: { file: './assets/penguin-back.webp?v=hq-20261117', label: '背面', note: '背面 · 祥云也藏在身后。' }
   };
   const poseOrder = Object.keys(poses);
   let heroPose = 'front';
@@ -64,7 +64,7 @@
       $$('[data-pose]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.pose === name)));
       $('[data-pose-status]').textContent = '当前为' + pose.label + '视角';
       if (!reducedMotion.matches && image.animate) {
-        image.animate([{ opacity: .4, transform: 'translateY(5px) rotate(0)' }, { opacity: 1, transform: 'translateY(0) rotate(-2deg)' }], { duration: 240, easing: 'ease-out' });
+        image.animate([{ opacity: .4, transform: 'translateY(5px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 240, easing: 'ease-out' });
       }
     } catch { notify('这个角度暂时加载不了，请稍后再试。'); }
   }
@@ -80,6 +80,7 @@
       const image = $('#studio-penguin');
       image.src = poses[name].file;
       image.alt = '青衫企鹅，' + poses[name].label + '视角';
+      $('[data-original-image]').href = poses[name].file;
       $$('[data-studio-pose]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.studioPose === name)));
       $('[data-studio-status]').textContent = poses[name].note;
     } catch { notify('这个角度暂时加载不了，请稍后再试。'); }

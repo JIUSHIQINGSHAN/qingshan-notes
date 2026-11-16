@@ -75,7 +75,7 @@ nav a:hover::after, nav button:hover::after { width: 100%; }
 .cloud-lines { position: absolute; bottom: 9%; left: -22px; width: 110%; z-index: -1; opacity: .65; }
 .cloud-lines svg { width: 100%; stroke: var(--line); stroke-width: 1.1; }
 .mascot-hit { width: 100%; padding: 0; background: none; border: none; border-radius: 45%; position: relative; margin-top: -12px; }
-.mascot-hit img { display: block; width: 100%; aspect-ratio: 1.03; object-fit: contain; filter: drop-shadow(0 20px 13px #2449320c); transform: translateY(var(--pose-y, 0)) rotate(var(--pose-r, -2deg)); transition: transform .45s ease, opacity .14s; }
+.mascot-hit img { display: block; width: 100%; aspect-ratio: 1.03; object-fit: contain; filter: drop-shadow(0 20px 13px #2449320c); transform: translateY(var(--pose-y, 0)); transition: transform .45s ease, opacity .14s; }
 .mascot-hit:hover img { --pose-y: -7px; --pose-r: 0deg; }
 .mascot-hit:active img { transform: scale(.98); }
 .mascot-hit img.changing { opacity: .25; }
@@ -204,6 +204,8 @@ h1 { margin: 27px 0 20px; font-weight: 500; }
 .studio-controls button { border: 1px solid var(--line); background: transparent; border-radius: 5px; font-size: 12px; padding: 7px 19px; }
 .studio-controls button[aria-pressed='true'] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
 .studio-note { text-align: center; color: var(--muted); font-size: 11px; margin: 17px 0 0; }
+.studio-original { display: block; width: fit-content; margin: 12px auto 0; padding: 4px 0; border-bottom: 1px solid var(--line); color: var(--ink); font-size: 12px; }
+.studio-original:hover { border-color: var(--mint); }
 .share-dialog label { display: block; font-size: 12px; color: var(--muted); }
 .share-dialog input { display: block; background: var(--paper); color: var(--ink); width: 100%; font-size: 12px; padding: 12px; border: 1px solid var(--line); border-radius: 4px; margin-top: 10px; }
 .share-dialog p { font-size: 11px; color: var(--muted); }

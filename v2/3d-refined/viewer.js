@@ -3,6 +3,7 @@ import { OrbitControls } from './vendor/addons/controls/OrbitControls.js';
 import { RoomEnvironment } from './vendor/addons/environments/RoomEnvironment.js';
 import { GLTFLoader } from './vendor/addons/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from './vendor/meshopt_decoder.module.js';
+import { downloadModel } from './model-download.js';
 
 const $ = selector => document.querySelector(selector);
 const buttons = Array.from(document.querySelectorAll('button'));
@@ -255,7 +256,10 @@ try {
   });
   $('#viewer').addEventListener('webglcontextlost', event => { event.preventDefault(); fallback('三维画面暂时中断，请刷新页面，或回到高清图片展示。'); });
 
-  new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).load('./qingshan-refined.glb', gltf => {
+  const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
+  downloadModel(new URL('./qingshan-refined.glb', import.meta.url).href, progress)
+    .then(buffer => loader.parseAsync(buffer, new URL('./', import.meta.url).href))
+    .then(gltf => {
     if (failed) return;
     try {
       model = gltf.scene; model.updateMatrixWorld(true);
@@ -285,7 +289,7 @@ try {
     } catch (error) {
       console.error('Model preparation failed:', error); fallback('模型暂时没有准备好，请刷新重试，或先看看高清图片。');
     }
-  }, progress, error => {
+  }).catch(error => {
     console.error('Model loading failed:', error); fallback('模型暂时没有加载成功，请检查网络后刷新，或先看看高清图片。');
   });
 } catch (error) {

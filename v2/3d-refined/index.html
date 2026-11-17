@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="青衫企鹅的 3D 精修试稿。由真实参考图驱动，继续推敲比例、绒面和祥云衣饰。">
+  <meta name="robots" content="noindex,follow">
+  <meta name="theme-color" content="#ecefe7">
+  <title>青衫企鹅 · 3D 精修试稿</title>
+  <link rel="icon" href="../assets/penguin-icon.webp?v=hq-20261117" type="image/webp">
+  <link rel="stylesheet" href="./styles.css">
+  <script type="importmap">{"imports":{"three":"./vendor/three.module.js"}}</script>
+  <script type="module">
+    import('./viewer.js').catch(error => {
+      console.error('Viewer module unavailable:', error);
+      document.querySelector('#loading').hidden = true;
+      document.querySelector('#fallback').hidden = false;
+      document.querySelector('#viewer').hidden = true;
+      document.querySelector('#fallback-message').textContent = '三维展示暂时没有加载成功，请刷新重试，或先看看高清图片。';
+      document.body.dataset.ready = 'fallback';
+    });
+  </script>
+</head>
+<body>
+  <a class="skip" href="#controls">跳到模型操作</a>
+  <header><a class="brand" href="../"><span>青</span><strong>旧事青衫<small>QINGSHAN / THE LITTLE HOST</small></strong></a><a class="back" href="../">← 回到个人空间</a></header>
+  <main>
+    <section class="viewer-shell" aria-labelledby="title">
+      <div class="stage" id="stage" aria-busy="true">
+        <div class="stage-top"><span>FIG. 03 / A CLOSER LOOK</span><span class="stage-badge">3D 精修试稿</span></div>
+        <canvas id="viewer" role="img" aria-label="青衫企鹅精修三维模型。拖动旋转，滚轮或双指缩放。键盘方向键旋转，加减号缩放，Home 返回全身正面。" tabindex="0"></canvas>
+        <div class="loading" id="loading" role="status" aria-live="polite"><span id="loading-status">正在迎接青衫企鹅…</span><progress id="loading-progress" max="100" aria-label="模型下载进度"></progress><small id="loading-detail">首次见面需要一点时间</small></div>
+        <div class="fallback" id="fallback" hidden><img src="../assets/penguin-front.webp?v=hq-20261117" alt="青衫企鹅高清参考图"><p id="fallback-message">当前浏览器无法开启 3D 展示。</p><a href="../">回到高清图片展示 →</a></div>
+        <div class="stage-bottom"><span>拖动旋转 · 滚轮缩放 · 双指缩放</span><button type="button" id="reset" disabled aria-label="复位到全身初始视角">复位视角 ↺</button></div>
+        <div class="angle-label" id="angle-label" aria-hidden="true">青衫 · 全身正面</div>
+      </div>
+      <aside id="controls">
+        <div class="intro"><span class="eyebrow">MEET QINGSHAN, AGAIN</span><h1 id="title">靠近一点，<br>再认识一次。</h1><p>沿着真实参考图，重新推敲轮廓，<br>也照顾到绒面、祥云与红绳。<br>这是一份仍在打磨的精修试稿。</p></div>
+        <div class="control-section"><h2>转个身看看 <span>VIEW</span></h2><div class="segmented" role="group" aria-label="全身模型视角"><button type="button" data-view="front" aria-pressed="true" disabled>正面</button><button type="button" data-view="side" aria-pressed="false" disabled>侧面</button><button type="button" data-view="back" aria-pressed="false" disabled>背面</button></div></div>
+        <div class="control-section"><h2>靠近一点 <span>ZOOM</span></h2><div class="zoom-row"><button type="button" id="zoom-out" aria-label="缩小模型" disabled>−</button><span>放大看局部，复位看全身</span><button type="button" id="zoom-in" aria-label="放大模型，局部细节可能超出画面" disabled>＋</button></div></div>
+        <div class="control-section"><h2>换一种氛围 <span>LIGHT</span></h2><div class="light-switch" role="group" aria-label="灯光环境"><button type="button" data-light="day" aria-pressed="true" disabled><i class="swatch day"></i>日间</button><button type="button" data-light="night" aria-pressed="false" disabled><i class="swatch night"></i>夜间</button></div></div>
+        <div class="auto-row"><label for="auto-rotate">慢慢转一圈</label><button type="button" id="auto-rotate" role="switch" aria-checked="false" disabled aria-label="自动旋转"><span></span></button></div>
+        <div class="download"><a id="download-model" aria-disabled="true" tabindex="-1" download="qingshan-refined.glb">保存精修模型 <span>↓</span></a><small>GLB 格式，可在其他 3D 工具中打开</small></div>
+        <p class="sculpt-note">真实参考驱动的精修试稿，<br>比例与衣饰仍可继续调整。<br><a href="../3d/">对照 3D 初稿 ↗</a><span class="link-divider"> · </span><a href="../">查看高清图片 ↗</a></p>
+      </aside>
+    </section>
+  </main>
+  <footer><span>© 2026 旧事青衫</span><span>一点青绿，一点好奇心。</span><a href="/qingshan-notes/">旧版存档 ↗</a></footer>
+  <div class="sr-only" id="announcement" role="status" aria-live="polite"></div>
+</body>
+</html>
